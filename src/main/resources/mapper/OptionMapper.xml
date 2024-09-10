@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospital.dao.OptionMapper">
+  <select id="selectAll" resultType="com.hospital.entity.Option" >
+    select * from boot_hospital_yuyue.option
+  </select>
+  <select id="getOption" resultType="com.hospital.entity.Option" parameterType="Integer">
+    select * from boot_hospital_yuyue.option where id=#{id}
+  </select>
+  <update id="updateById" parameterType="com.hospital.entity.Option" >
+    update boot_hospital_yuyue.option set name=#{name},type=#{type},price=#{price} where id=#{id}
+  </update>
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from boot_hospital_yuyue.option
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="com.hospital.entity.Option">
+    insert into boot_hospital_yuyue.option (name, type,price)
+    values (#{name},#{type},#{price})
+  </insert>
+  <select id="getTotalPrice" resultType="BigDecimal">
+    select sum(price) from boot_hospital_yuyue.option  <if test="optionids !=null">
+    where boot_hospital_yuyue.option.id in
+    <foreach collection="optionids" item="id" index="index" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+
+  </if>
+  </select>
+</mapper>

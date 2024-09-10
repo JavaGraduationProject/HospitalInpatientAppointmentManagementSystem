@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospital.dao.AppointmentMapper">
+  <resultMap id="BaseResultMap" type="com.hospital.entity.Appointment">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="patientid" jdbcType="INTEGER" property="patientid" />
+    <result column="doctorid" jdbcType="INTEGER" property="doctorid" />
+    <result column="time" jdbcType="DATE" property="time" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, patientid, doctorid, time
+  </sql>
+  <select id="findAll" resultType="com.hospital.entity.Appointment">
+    select a.*,p.name as patientname,d.name as doctorname,d.department as department from appointment a
+    left join patient p on a.patientid=p.id
+    left join doctor d on d.id=a.doctorid
+    where 1=1
+    <if test="patientids !=null">
+      and a.patientid in
+          <foreach collection="patientids" item="patientid" index="index" open="(" close=")" separator=",">
+      #{patientid}
+    </foreach>
+
+    </if>
+    <if test="doctorids !=null">
+      and a.doctorid in
+      <foreach collection="doctorids" item="doctorid" index="index" open="(" close=")" separator=",">
+        #{doctorid}
+      </foreach>
+    </if>
+    order by a.id
+  </select>
+  <select id="selectByPatientId" parameterType="java.lang.Integer" resultType="com.hospital.entity.Appointment">
+    select a.*,p.name as patientname,d.name as doctorname from appointment a
+    left join patient p on a.patientid=p.id
+   left join doctor d on d.id=a.doctorid
+    where patientid = #{patientid}
+    order by a.id
+  </select>
+  <select id="selectByDoctorId" parameterType="java.lang.Integer" resultType="com.hospital.entity.Appointment">
+    select a.*,p.name as patientname,d.name as doctorname from appointment a
+    left join patient p on a.patientid=p.id
+    left join doctor d on d.id=a.doctorid
+    where doctorid = #{doctorId}
+    <if test="patientids !=null">
+      and a.patientid in
+      <foreach collection="patientids" item="patientid" index="index" open="(" close=")" separator=",">
+        #{patientid}
+      </foreach>
+    </if>
+    <if test="time !=null and time!=''">
+      and a.time=#{time}
+    </if>
+    order by a.id
+  </select>
+  <select id="selectTheLast" parameterType="Integer"  resultType="Integer">
+    select max(id) from appointment
+    where patientid = #{patientid}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.hospital.entity.Appointment">
+    select a.*,p.name as patientname,d.name as doctorname,d.department as department
+    from appointment a
+    left join doctor d
+    on d.id=a.doctorid
+    left join patient p
+    on p.id=a.patientid
+    where a.id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from appointment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hospital.entity.Appointment">
+    insert into appointment (patientid, doctorid,
+      time,expenses)
+    values (#{patientid,jdbcType=INTEGER}, #{doctorid,jdbcType=INTEGER},
+      #{time,jdbcType=DATE},#{expenses})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hospital.entity.Appointment">
+    insert into appointment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="patientid != null">
+        patientid,
+      </if>
+      <if test="doctorid != null">
+        doctorid,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="patientid != null">
+        #{patientid,jdbcType=INTEGER},
+      </if>
+      <if test="doctorid != null">
+        #{doctorid,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hospital.entity.Appointment">
+    update appointment
+    <set>
+      <if test="patientid != null">
+        patientid = #{patientid,jdbcType=INTEGER},
+      </if>
+      <if test="doctorid != null">
+        doctorid = #{doctorid,jdbcType=INTEGER},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=DATE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hospital.entity.Appointment">
+    update appointment
+    set patientid = #{patientid,jdbcType=INTEGER},
+      doctorid = #{doctorid,jdbcType=INTEGER},
+      time = #{time,jdbcType=DATE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

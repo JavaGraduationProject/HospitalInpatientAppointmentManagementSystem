@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospital.dao.MedicalhistoryMapper">
+  <resultMap id="BaseResultMap" type="com.hospital.entity.Medicalhistory">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="patientid" jdbcType="INTEGER" property="patientid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, patientid, name,time
+  </sql>
+  <select id="findAll" resultType="com.hospital.entity.Medicalhistory">
+    select m.*,p.name as patientname,d.name as doctorname from medicalhistory m
+    left join patient p on p.id=m.patientid
+    left join doctor d on m.doctorid=d.id
+    where 1=1
+    <if test="patientids !=null">
+      and m.patientid in
+      <foreach collection="patientids" item="patientid" index="index" open="(" close=")" separator=",">
+        #{patientid}
+      </foreach>
+
+    </if>
+    <if test="doctorids !=null">
+      and m.doctorid in
+      <foreach collection="doctorids" item="doctorid" index="index" open="(" close=")" separator=",">
+        #{doctorid}
+      </foreach>
+    </if>
+    order by m.id
+  </select>
+  <select id="selectByPatientId" parameterType="java.lang.Integer" resultType="com.hospital.entity.Medicalhistory">
+    select m.*,p.name as patientname,d.name as doctorname from medicalhistory m
+    left join patient p on p.id=m.patientid
+    left join doctor d on m.doctorid=d.id
+    where patientid = #{patientid}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.hospital.entity.Medicalhistory">
+    select * from medicalhistory
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from medicalhistory
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hospital.entity.Medicalhistory">
+    insert into medicalhistory (id, patientid, name,time,doctorid
+      )
+    values (#{id,jdbcType=INTEGER}, #{patientid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},#{time},#{doctorid}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hospital.entity.Medicalhistory">
+    insert into medicalhistory
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="patientid != null">
+        patientid,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="patientid != null">
+        #{patientid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hospital.entity.Medicalhistory">
+    update medicalhistory
+    <set>
+      <if test="patientid != null">
+        patientid = #{patientid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hospital.entity.Medicalhistory">
+    update medicalhistory
+    set patientid = #{patientid,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},time=#{time},doctorid=#{doctorid}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
